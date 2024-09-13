@@ -1,7 +1,7 @@
 import tkinter as tk
 from tkinter import filedialog
 import pandas as pd
-from item_actions import show_item_info
+from show_item_info import show_item_info
 
 # Initialize file paths and current row index
 file_path_1 = ""
