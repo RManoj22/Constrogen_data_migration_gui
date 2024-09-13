@@ -36,12 +36,12 @@ def show_item_info(root, df1, df2, current_row_index, s_no_value=None):
             # Fetch the relevant fields from df1
             s_no_value = df1['SNo'].iloc[current_row_index]
             item_id_value = df1['ItemID'].iloc[current_row_index]
-            item_name_value = df1['ItemName'].iloc[current_row_index]
+            old_item_name_value = df1['ItemName'].iloc[current_row_index]
             old_item_type_value = df1['ItemTypeName'].iloc[current_row_index]
 
             # Check for matching items in df2
             if 'Item' in df2.columns:
-                item_matches = df2[df2['Item'] == item_name_value]
+                item_matches = df2[df2['Item'] == old_item_name_value]
                 match_count = len(item_matches)  # Count number of matches
 
                 # Display the number of matches
@@ -108,7 +108,7 @@ def show_item_info(root, df1, df2, current_row_index, s_no_value=None):
                 item_sub_type_value = "N/A"
                 item_purpose_value = "N/A"
                 item_specifications_value = "N/A"
-                
+
             # Display SNo and other details
             tk.Label(left_frame, text="S.No:").grid(
                 row=0, column=0, padx=10, pady=5, sticky="w")
@@ -116,14 +116,14 @@ def show_item_info(root, df1, df2, current_row_index, s_no_value=None):
             s_no_entry.grid(row=0, column=1, padx=10, pady=5)
             s_no_entry.insert(0, str(s_no_value))
 
-            tk.Label(left_frame, text="ItemName:").grid(
+            tk.Label(left_frame, text="Old ItemName:").grid(
                 row=2, column=0, padx=10, pady=5, sticky="w")
             item_name_entry = tk.Entry(left_frame, width=30)
             item_name_entry.grid(row=2, column=1, padx=10, pady=5)
-            item_name_entry.insert(0, item_name_value)
+            item_name_entry.insert(0, old_item_name_value)
             item_name_entry.config(state="readonly")
 
-            tk.Label(left_frame, text="ItemType:").grid(
+            tk.Label(left_frame, text="Old ItemType:").grid(
                 row=3, column=0, padx=10, pady=5, sticky="w")
             old_item_type_entry = tk.Entry(left_frame, width=30)
             old_item_type_entry.grid(row=3, column=1, padx=10, pady=5)
@@ -194,7 +194,7 @@ def show_item_info(root, df1, df2, current_row_index, s_no_value=None):
             prev_button.grid(row=0, column=1, padx=5)
 
             save_button = tk.Button(
-                button_frame, text="Save", command=lambda: save_action(s_no_value, item_type_value, item_name_value, new_value_found, item_sub_type_value, item_description, item_id_value, item_key_value, item_specifications_value))
+                button_frame, text="Save", command=lambda: save_action(s_no_value, item_type_value, old_item_name_value, new_value_found, item_sub_type_value, item_description, item_id_value, item_key_value, item_specifications_value))
             save_button.grid(row=0, column=2, padx=5)
 
             next_button = tk.Button(button_frame, text="Next", command=lambda: next_action(
