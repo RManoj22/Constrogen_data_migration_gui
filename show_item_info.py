@@ -37,10 +37,15 @@ def show_item_info(root, df1, df2, current_row_index, s_no_value=None):
             old_item_type_value = df1['ItemTypeName'].iloc[current_row_index]
 
             item_type_options = ["N/A"]
+            item_type_options.extend(df2['Item type'].unique().tolist())
             item_sub_type_options = ["N/A"]
+            item_sub_type_options.extend(df2['Item sub type'].unique().tolist())
             item_purpose_options = ["N/A"]
+            item_purpose_options.extend(df2['Purpose'].unique().tolist())
             item_specifications_options = ["N/A"]
+            item_specifications_options.extend(df2['Item specifications'].unique().tolist())
             item_desc_options = ["N/A"]
+            item_desc_options.extend(df2['Item'].unique().tolist())
             default_item_type = "N/A"
             default_item_sub_type = "N/A"
             default_item_purpose = "N/A"
