@@ -95,24 +95,24 @@ def show_item_info(root, df1, df2, current_row_index, s_no_value=None):
                     new_value_found = "Yes"
 
                     # Handle item description
-                    if len(item_matches) > 1:
-                        # Multiple matches found, create a dropdown
-                        item_descriptions = item_matches['Item'].values.tolist(
-                        )
-                        selected_item_description = tk.StringVar(root)
-                        selected_item_description.set(
-                            item_descriptions[0])  # Set the default value
+                    # if len(item_matches) > 1:
+                    #     # Multiple matches found, create a dropdown
+                    #     item_descriptions = item_matches['Item'].values.tolist(
+                    #     )
+                    #     selected_item_description = tk.StringVar(root)
+                    #     selected_item_description.set(
+                    #         item_descriptions[0])  # Set the default value
 
-                        tk.Label(right_frame, text="Matches found:").grid(
-                            row=7, column=0, padx=10, pady=5, sticky="w")
-                        item_description_dropdown = ttk.Combobox(
-                            right_frame, textvariable=selected_item_description, values=item_descriptions, width=30)
-                        item_description_dropdown.grid(
-                            row=7, column=1, padx=10, pady=5)
-                        item_description = selected_item_description.get()
-                    else:
+                    #     tk.Label(right_frame, text="Matches found:").grid(
+                    #         row=7, column=0, padx=10, pady=5, sticky="w")
+                    #     item_description_dropdown = ttk.Combobox(
+                    #         right_frame, textvariable=selected_item_description, values=item_descriptions, width=30)
+                    #     item_description_dropdown.grid(
+                    #         row=7, column=1, padx=10, pady=5)
+                    #     item_description = selected_item_description.get()
+                    # else:
                         # Single match found, show as a regular Entry field
-                        item_description = item_matches['Item'].values[0]
+                    item_description = item_matches['Item'].values[0]
 
                     item_key_value = item_matches['Item key'].values[0] if 'Item key' in df2.columns else "N/A"
                     item_type_value = item_matches['Item type'].values[0] if 'Item type' in df2.columns else "N/A"
