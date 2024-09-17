@@ -5,7 +5,6 @@ import pandas as pd
 from show_item_info import show_item_info
 
 current_path = os.getcwd()
-print(current_path)
 # Initialize file paths and current row index
 # Default path for old data
 file_path_1 = f"{current_path}\input_files\matched_items_result.xlsx"

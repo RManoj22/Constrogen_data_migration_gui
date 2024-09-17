@@ -111,7 +111,7 @@ def show_item_info(root, df1, df2, current_row_index, s_no_value=None):
                     #         row=7, column=1, padx=10, pady=5)
                     #     item_description = selected_item_description.get()
                     # else:
-                        # Single match found, show as a regular Entry field
+                    # Single match found, show as a regular Entry field
                     item_description = item_matches['Item'].values[0]
 
                     item_key_value = item_matches['Item key'].values[0] if 'Item key' in df2.columns else "N/A"
@@ -249,6 +249,12 @@ def show_item_info(root, df1, df2, current_row_index, s_no_value=None):
             item_key_entry.insert(0, item_key_value)
             item_key_entry.config(state="readonly")
 
+            match_found_var = tk.BooleanVar()
+            match_found_checkbox = tk.Checkbutton(
+                right_frame, text="Match Not Found", variable=match_found_var)
+            match_found_checkbox.grid(
+                row=6, column=0, columnspan=2, padx=10, pady=15, sticky="w")
+
             button_frame = tk.Frame(root)
             button_frame.pack(pady=10)
 
@@ -273,7 +279,8 @@ def show_item_info(root, df1, df2, current_row_index, s_no_value=None):
                 item_description_combobox=item_description_combobox,
                 old_item_id_value=item_id_value,
                 new_item_key=item_key_entry,
-                new_item_specifications=item_specifications_combobox
+                new_item_specifications=item_specifications_combobox,
+                match_found=match_found_var.get()  # Get the boolean value
             ))
             save_button.pack()
 

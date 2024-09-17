@@ -34,7 +34,7 @@ def prev_action(root, df1, df2, current_row_index):
         return root, df1, df2, current_row_index
 
 
-def save_action(s_no_value, item_type_combobox, item_name_entry, new_value_found, sub_type_combobox, item_description_combobox, old_item_id_value, new_item_key, new_item_specifications):
+def save_action(s_no_value, item_type_combobox, item_name_entry, new_value_found, sub_type_combobox, item_description_combobox, old_item_id_value, new_item_key, new_item_specifications, match_found):
     # Retrieve current values from the comboboxes and entry fields
     current_item_type = item_type_combobox.get()  # Get selected item type
     current_item_name = item_name_entry.get()  # Get entered item name
@@ -57,7 +57,8 @@ def save_action(s_no_value, item_type_combobox, item_name_entry, new_value_found
             "Current Item Description": [current_item_description],
             "Old Item ID": [old_item_id_value],
             "New Item Key": [current_item_key_value],
-            "New Item Specifications": [current_item_spec_value]
+            "New Item Specifications": [current_item_spec_value],
+            "Match not found": [match_found]
         }
 
         # Create a DataFrame
