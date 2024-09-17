@@ -34,22 +34,30 @@ def prev_action(root, df1, df2, current_row_index):
         return root, df1, df2, current_row_index
 
 
-def save_action(s_no_value, old_item_type_value, old_item_name_value, new_value_found, new_item_sub_type_value, new_item_description, old_item_id_value, new_item_key_value, new_item_specifications_value):
+def save_action(s_no_value, item_type_combobox, item_name_entry, new_value_found, sub_type_combobox, item_description_combobox, old_item_id_value, new_item_key, new_item_specifications):
+    # Retrieve current values from the comboboxes and entry fields
+    current_item_type = item_type_combobox.get()  # Get selected item type
+    current_item_name = item_name_entry.get()  # Get entered item name
+    current_sub_type = sub_type_combobox.get()  # Get selected sub-type
+    current_item_description = item_description_combobox.get()  # Get selected description
+    current_item_spec_value = new_item_specifications.get()  # Get selected description
+    current_item_key_value = new_item_key.get()  # Get selected description
+
     result = messagebox.askyesno(
         "Save Confirmation", "Are you sure you want to save?")
 
     if result:
-        # Create a dictionary with the data
+        # Create a dictionary with the collected data
         data = {
             "S.No": [s_no_value],
-            "Old Item Type": [old_item_type_value],
-            "Old Item Name": [old_item_name_value],
+            "Current Item Type": [current_item_type],
+            "Current Item Name": [current_item_name],
             "New Value Found": [new_value_found],
-            "New Item Sub Type": [new_item_sub_type_value],
-            "New Item Description": [new_item_description],
+            "Current Sub Type": [current_sub_type],
+            "Current Item Description": [current_item_description],
             "Old Item ID": [old_item_id_value],
-            "New Item Key": [new_item_key_value],
-            "New Item Specifications": [new_item_specifications_value]
+            "New Item Key": [current_item_key_value],
+            "New Item Specifications": [current_item_spec_value]
         }
 
         # Create a DataFrame

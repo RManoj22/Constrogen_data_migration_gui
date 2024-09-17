@@ -1,6 +1,37 @@
 import tkinter as tk
 from tkinter import ttk
 from button_actions import save_action, search_action, prev_action, next_action
+from filter_dropdowns import handle_item_type_selection, handle_item_purpose_selection, handle_item_sub_type_selection, handle_item_description_selection
+
+
+class AutocompleteCombobox(ttk.Combobox):
+    def set_completion_list(self, completion_list):
+        """Use this method to set the values for the combobox and make it searchable."""
+        # Convert all items to strings, and handle NaN values (floats)
+        self._completion_list = sorted(
+            [str(item) if item is not None else "N/A" for item in completion_list])
+        self['values'] = self._completion_list  # Set combobox values
+        # Bind key release event
+        self.bind('<KeyRelease>', self._handle_keyrelease)
+
+    def _handle_keyrelease(self, event):
+        """Filter the combobox values based on the current text input."""
+        if event.keysym in ("BackSpace", "Left", "Right", "Up", "Down", "Shift_L", "Shift_R"):
+            return  # Ignore certain keypresses
+        value = self.get().lower()  # Get current input text
+        if value == "":
+            # Reset to full list if empty
+            self['values'] = self._completion_list
+        else:
+            filtered_values = [
+                item for item in self._completion_list if value in item.lower()]
+            # Update dropdown with filtered list
+            self['values'] = filtered_values
+        self.event_generate('<Down>')  # Open the dropdown list
+
+    def set_selected_value(self, value):
+        """Set the selected value in the combobox."""
+        self.set(value)
 
 
 def show_item_info(root, df1, df2, current_row_index, s_no_value=None):
@@ -36,16 +67,13 @@ def show_item_info(root, df1, df2, current_row_index, s_no_value=None):
             old_item_name_value = df1['ItemName'].iloc[current_row_index]
             old_item_type_value = df1['ItemTypeName'].iloc[current_row_index]
 
-            item_type_options = ["N/A"]
-            item_type_options.extend(df2['Item type'].unique().tolist())
-            item_sub_type_options = ["N/A"]
-            item_sub_type_options.extend(df2['Item sub type'].unique().tolist())
-            item_purpose_options = ["N/A"]
-            item_purpose_options.extend(df2['Purpose'].unique().tolist())
-            item_specifications_options = ["N/A"]
-            item_specifications_options.extend(df2['Item specifications'].unique().tolist())
-            item_desc_options = ["N/A"]
-            item_desc_options.extend(df2['Item'].unique().tolist())
+            item_type_options = ["N/A"] + df2['Item type'].unique().tolist()
+            item_sub_type_options = ["N/A"] + \
+                df2['Item sub type'].unique().tolist()
+            item_purpose_options = ["N/A"] + df2['Purpose'].unique().tolist()
+            item_specifications_options = [
+                "N/A"] + df2['Item specifications'].unique().tolist()
+            item_desc_options = ["N/A"] + df2['Item'].unique().tolist()
             default_item_type = "N/A"
             default_item_sub_type = "N/A"
             default_item_purpose = "N/A"
@@ -98,7 +126,8 @@ def show_item_info(root, df1, df2, current_row_index, s_no_value=None):
                     item_type_options.append(item_type_value)
                     item_sub_type_options.append(item_sub_type_value)
                     item_purpose_options.append(item_purpose_value)
-                    item_specifications_options.append(item_specifications_value)
+                    item_specifications_options.append(
+                        item_specifications_value)
                     item_desc_options.append(item_description)
                     default_item_type = item_type_value
                     default_item_sub_type = item_sub_type_value
@@ -152,47 +181,73 @@ def show_item_info(root, df1, df2, current_row_index, s_no_value=None):
             new_value_entry.insert(0, new_value_found)
             new_value_entry.config(state="readonly")
 
-            tk.Label(right_frame, text="Item Key:").grid(
-                row=1, column=0, padx=10, pady=5, sticky="w")
-            item_key_entry = tk.Entry(right_frame, width=30)
-            item_key_entry.grid(row=1, column=1, padx=10, pady=5)
-            item_key_entry.insert(0, item_key_value)
-            item_key_entry.config(state="readonly")
-
-            tk.Label(right_frame, text="Item description:").grid(
-                row=0, column=0, padx=10, pady=5, sticky="w")
-            item_description_combobox = ttk.Combobox(
-                right_frame, values=item_desc_options, width=30)
-            item_description_combobox.grid(row=0, column=1, padx=10, pady=5)
-            item_description_combobox.set(default_item_desc)
-
             tk.Label(right_frame, text="Item Type:").grid(
-                row=2, column=0, padx=10, pady=5, sticky="w")
-            item_type_combobox = ttk.Combobox(
+                row=0, column=0, padx=10, pady=5, sticky="w")
+            item_type_combobox = AutocompleteCombobox(
                 right_frame, values=item_type_options, width=30)
-            item_type_combobox.grid(row=2, column=1, padx=10, pady=5)
-            item_type_combobox.set(default_item_type)
+            item_type_combobox.grid(row=0, column=1, padx=10, pady=5)
+            item_type_combobox.set_completion_list(
+                item_type_options)  # Set autocomplete list
+            item_type_combobox.set_selected_value(default_item_type)
 
-            tk.Label(right_frame, text="Item Sub Type:").grid(
-                row=3, column=0, padx=10, pady=5, sticky="w")
-            item_sub_type_combobox = ttk.Combobox(
-                right_frame, values=item_sub_type_options, width=30)
-            item_sub_type_combobox.grid(row=3, column=1, padx=10, pady=5)
-            item_sub_type_combobox.set(default_item_sub_type)
+            item_type_combobox.bind('<<ComboboxSelected>>', lambda event: handle_item_type_selection(
+                event, item_type_combobox, item_sub_type_combobox, item_key_entry,
+                item_description_combobox, item_purpose_combobox, item_specifications_combobox, df2))
 
             tk.Label(right_frame, text="Item Purpose:").grid(
-                row=4, column=0, padx=10, pady=5, sticky="w")
-            item_purpose_combobox = ttk.Combobox(
+                row=1, column=0, padx=10, pady=5, sticky="w")
+            item_purpose_combobox = AutocompleteCombobox(
                 right_frame, values=item_purpose_options, width=30)
-            item_purpose_combobox.grid(row=4, column=1, padx=10, pady=5)
-            item_purpose_combobox.set(default_item_purpose)
+            item_purpose_combobox.grid(row=1, column=1, padx=10, pady=5)
+            item_purpose_combobox.set_completion_list(
+                item_purpose_options)  # Set autocomplete list
+            item_purpose_combobox.set_selected_value(default_item_purpose)
+
+            item_purpose_combobox.bind('<<ComboboxSelected>>', lambda event: handle_item_purpose_selection(
+                event, item_type_combobox, item_purpose_combobox, item_sub_type_combobox, df2))
+
+            tk.Label(right_frame, text="Item Sub Type:").grid(
+                row=2, column=0, padx=10, pady=5, sticky="w")
+            item_sub_type_combobox = AutocompleteCombobox(
+                right_frame, values=item_sub_type_options, width=30)
+            item_sub_type_combobox.grid(row=2, column=1, padx=10, pady=5)
+            item_sub_type_combobox.set_completion_list(
+                item_sub_type_options)  # Set autocomplete list
+            item_sub_type_combobox.set_selected_value(default_item_sub_type)
+
+            # In show_item_info.py, inside show_item_info function
+            item_sub_type_combobox.bind('<<ComboboxSelected>>', lambda event: handle_item_sub_type_selection(
+                event, item_type_combobox, item_purpose_combobox, item_sub_type_combobox, item_description_combobox, item_specifications_combobox, item_key_entry, df2))
+
+            tk.Label(right_frame, text="Item description:").grid(
+                row=3, column=0, padx=10, pady=5, sticky="w")
+            item_description_combobox = AutocompleteCombobox(
+                right_frame, width=30)
+            item_description_combobox.grid(row=3, column=1, padx=10, pady=5)
+            item_description_combobox.set_completion_list(
+                item_desc_options)  # Set autocomplete list
+            item_description_combobox.set_selected_value(default_item_desc)
+
+            # In show_item_info.py, inside show_item_info function
+            item_description_combobox.bind('<<ComboboxSelected>>', lambda event: handle_item_description_selection(
+                event, item_type_combobox, item_purpose_combobox, item_sub_type_combobox, item_description_combobox, item_specifications_combobox, item_key_entry, df2))
 
             tk.Label(right_frame, text="Item Specifications:").grid(
-                row=5, column=0, padx=10, pady=5, sticky="w")
-            item_specifications_combobox = ttk.Combobox(
+                row=4, column=0, padx=10, pady=5, sticky="w")
+            item_specifications_combobox = AutocompleteCombobox(
                 right_frame, values=item_specifications_options, width=30)
-            item_specifications_combobox.grid(row=5, column=1, padx=10, pady=5)
-            item_specifications_combobox.set(default_item_specifications)
+            item_specifications_combobox.grid(row=4, column=1, padx=10, pady=5)
+            item_specifications_combobox.set_completion_list(
+                item_specifications_options)  # Set autocomplete list
+            item_specifications_combobox.set_selected_value(
+                default_item_specifications)
+
+            tk.Label(right_frame, text="Item Key:").grid(
+                row=5, column=0, padx=10, pady=5, sticky="w")
+            item_key_entry = tk.Entry(right_frame, width=30)
+            item_key_entry.grid(row=5, column=1, padx=10, pady=5)
+            item_key_entry.insert(0, item_key_value)
+            item_key_entry.config(state="readonly")
 
             button_frame = tk.Frame(root)
             button_frame.pack(pady=10)
@@ -209,18 +264,18 @@ def show_item_info(root, df1, df2, current_row_index, s_no_value=None):
                 *next_action(root, df1, df2, current_row_index)))
             next_button.grid(row=0, column=2, padx=5)
 
-            save_button = tk.Button(button_frame, text="Save", command=lambda: save_action(
-                s_no_value,
-                old_item_type_value,
-                old_item_name_value,
-                new_value_found,
-                item_sub_type_value,
-                item_description,
-                item_id_value,
-                item_key_value,
-                item_specifications_value
+            save_button = tk.Button(root, text="Save", command=lambda: save_action(
+                s_no_value=s_no_entry.get(),
+                item_type_combobox=item_type_combobox,
+                item_name_entry=item_name_entry,
+                new_value_found=new_value_found,  # If applicable
+                sub_type_combobox=item_sub_type_combobox,
+                item_description_combobox=item_description_combobox,
+                old_item_id_value=item_id_value,
+                new_item_key=item_key_entry,
+                new_item_specifications=item_specifications_combobox
             ))
-            save_button.grid(row=0, column=3, padx=5)
+            save_button.pack()
 
 
 def update_info(root, df1, df2, new_row_index):
