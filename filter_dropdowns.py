@@ -42,10 +42,13 @@ def handle_item_type_selection(event, combobox, sub_type_combobox, key_entry, de
         print(f"Automatically selected Item Purpose: {filtered_purposes[0]}")
 
 
-def handle_item_purpose_selection(event, item_type_combobox, purpose_combobox, sub_type_combobox, df2):
+def handle_item_purpose_selection(event, item_type_combobox, purpose_combobox, sub_type_combobox, item_description_combobox, item_specifications_combobox, item_key_entry, df2):
     selected_item_type = item_type_combobox.get()  # Get selected item type
     selected_purpose = purpose_combobox.get()  # Get selected purpose
-
+    item_description_combobox.set('')
+    item_specifications_combobox.set('')
+    item_key_entry.config(state='normal')
+    item_key_entry.delete(0, tk.END)
     # Print selected values for debugging
     print(
         f"Selected Item Type: {selected_item_type}, Selected Purpose: {selected_purpose}")
@@ -79,12 +82,8 @@ def handle_item_sub_type_selection(event, item_type_combobox, purpose_combobox, 
         f"Selected Item Type: {selected_item_type}, Selected Purpose: {selected_purpose}, Selected Sub Type: {selected_sub_type}")
 
     # Clear the values of the other comboboxes and fields
-    # Clear the selected value in Item Description
     description_combobox.set('')
-    # Clear the selected value in Item Specifications
     specifications_combobox.set('')
-
-    # Temporarily remove the read-only state of item_key_entry, clear its value, and set it back to read-only
     key_entry.config(state='normal')
     key_entry.delete(0, tk.END)  # Clear the content in the entry widget
     key_entry.config(state='readonly')  # Set it back to read-only
@@ -107,6 +106,9 @@ def handle_item_sub_type_selection(event, item_type_combobox, purpose_combobox, 
         description_combobox.set(filtered_descriptions[0])
         print(
             f"Automatically selected Item Description: {filtered_descriptions[0]}")
+        # Call handle_item_description_selection to set the specifications and key
+        handle_item_description_selection(None, item_type_combobox, purpose_combobox,
+                                          sub_type_combobox, description_combobox, specifications_combobox, key_entry, df2)
     elif len(filtered_descriptions) > 1:
         # Multiple options available, allow user to select
         description_combobox.set('')  # Clear the selection to allow user input
@@ -148,12 +150,12 @@ def handle_item_description_selection(event, item_type_combobox, purpose_combobo
             f"Automatically selected Item Specification: {filtered_specifications[0]}")
     elif len(filtered_specifications) > 1:
         # Multiple options available, allow user to select
-        # Clear the selection to allow user input
         specifications_combobox.set('')
         print(
             f"Multiple Item Specifications available: {filtered_specifications}")
     else:
-        specifications_combobox.set('')  # Clear the selection
+        # No specifications found, reset the combobox
+        specifications_combobox.set('')
         print("No matching Item Specifications found.")
 
     # Now handle setting the 'Item key' based on the selected values

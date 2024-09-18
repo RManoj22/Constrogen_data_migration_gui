@@ -1,6 +1,6 @@
 import tkinter as tk
 from tkinter import ttk
-from button_actions import save_action, search_action, prev_action, next_action
+from button_actions import save_action, search_action, prev_action, next_action, clear_action
 from filter_dropdowns import handle_item_type_selection, handle_item_purpose_selection, handle_item_sub_type_selection, handle_item_description_selection
 
 
@@ -207,7 +207,7 @@ def show_item_info(root, df1, df2, current_row_index, s_no_value=None):
             item_purpose_combobox.set_selected_value(default_item_purpose)
 
             item_purpose_combobox.bind('<<ComboboxSelected>>', lambda event: handle_item_purpose_selection(
-                event, item_type_combobox, item_purpose_combobox, item_sub_type_combobox, df2))
+                event, item_type_combobox, item_purpose_combobox, item_sub_type_combobox, item_description_combobox, item_specifications_combobox, item_key_entry, df2))
 
             tk.Label(right_frame, text="Item Sub Type:", font=("Arial", 12)).grid(
                 row=2, column=0, padx=10, pady=20, sticky="w")
@@ -260,34 +260,52 @@ def show_item_info(root, df1, df2, current_row_index, s_no_value=None):
             match_found_checkbox.grid(
                 row=6, column=0, columnspan=2, padx=10, pady=15, sticky="w")
 
-            button_frame = tk.Frame(root)
-            button_frame.pack(pady=10)
+            # Create a separate frame for Previous/Next navigation buttons
+            navigation_button_frame = tk.Frame(root)
+            navigation_button_frame.pack(pady=50)
 
-            search_button = tk.Button(button_frame, text="Search", font=("Arial", 12), width=12, height=2, command=lambda: update_info(
-                *search_action(root, df1, df2, current_row_index, s_no_entry)))
-            search_button.grid(row=0, column=0, padx=30)
-
-            prev_button = tk.Button(button_frame, text="Previous",  font=("Arial", 12), width=12, height=2, command=lambda: update_info(
+            # Navigation buttons: Previous, Next
+            prev_button = tk.Button(navigation_button_frame, text="Previous", font=("Arial", 12), width=12, height=2, command=lambda: update_info(
                 *prev_action(root, df1, df2, current_row_index)))
-            prev_button.grid(row=0, column=1, padx=30)
+            prev_button.grid(row=0, column=0, padx=30)
 
-            next_button = tk.Button(button_frame, text="Next",  font=("Arial", 12), width=12, height=2, command=lambda: update_info(
+            next_button = tk.Button(navigation_button_frame, text="Next", font=("Arial", 12), width=12, height=2, command=lambda: update_info(
                 *next_action(root, df1, df2, current_row_index)))
-            next_button.grid(row=0, column=2, padx=30)
+            next_button.grid(row=0, column=1, padx=30)
 
-            save_button = tk.Button(root, text="Save",  font=("Arial", 12), width=12, height=2, command=lambda: save_action(
+            # Create button frame for Search, Save, Clear
+            action_button_frame = tk.Frame(root)
+            action_button_frame.pack(pady=10)
+
+            # Search, Save, Clear buttons
+            search_button = tk.Button(action_button_frame, text="Search", font=("Arial", 12), width=12, height=2, command=lambda: update_info(
+                *search_action(root, df1, df2, current_row_index, s_no_entry)))
+            search_button.grid(row=0, column=0, padx=15)
+
+            save_button = tk.Button(action_button_frame, text="Save", font=("Arial", 12), width=12, height=2, command=lambda: save_action(
                 s_no_value=s_no_entry.get(),
                 item_type_combobox=item_type_combobox,
                 item_name_entry=item_name_entry,
-                new_value_found=new_value_found,  # If applicable
+                new_value_found=new_value_found,
                 sub_type_combobox=item_sub_type_combobox,
                 item_description_combobox=item_description_combobox,
                 old_item_id_value=item_id_value,
                 new_item_key=item_key_entry,
                 new_item_specifications=item_specifications_combobox,
-                match_found=match_found_var.get()  # Get the boolean value
+                match_found=match_found_var.get()
             ))
-            save_button.pack(pady=(10, 0))
+            save_button.grid(row=0, column=1, padx=15)
+
+            clear_button = tk.Button(action_button_frame, text="Clear", font=("Arial", 12), width=12, height=2, command=lambda: clear_action(
+                item_type_combobox=item_type_combobox,
+                sub_type_combobox=item_sub_type_combobox,
+                item_description_combobox=item_description_combobox,
+                new_item_key=item_key_entry,
+                new_item_specifications=item_specifications_combobox,
+                new_item_purpose=item_purpose_combobox,
+                match_found=match_found_var
+            ))
+            clear_button.grid(row=0, column=2, padx=15)
 
 
 def update_info(root, df1, df2, new_row_index):

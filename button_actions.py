@@ -87,3 +87,22 @@ def next_action(root, df1, df2, current_row_index):
     if df1 is not None and current_row_index < len(df1) - 1:
         current_row_index += 1
         return root, df1, df2, current_row_index
+
+
+def clear_action(item_type_combobox,
+                 sub_type_combobox,
+                 item_description_combobox,
+                 new_item_key,
+                 new_item_specifications,
+                 new_item_purpose,
+                 match_found):
+    item_type_combobox.set('N/A')
+    sub_type_combobox.set('N/A')
+    item_description_combobox.set('N/A')
+    new_item_specifications.set('N/A')
+    new_item_purpose.set('N/A')
+    new_item_key.config(state='normal')
+    new_item_key.delete(0, tk.END)  # Clear the content in the entry widget
+    new_item_key.insert(0, 'N/A')  # Set the value to 'N/A'
+    new_item_key.config(state='readonly')
+    match_found.set(False)
