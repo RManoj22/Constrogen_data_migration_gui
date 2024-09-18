@@ -1,6 +1,6 @@
 import tkinter as tk
 from tkinter import ttk
-from button_actions import save_action, search_action, prev_action, next_action, clear_action
+from button_actions import save_action, search_action, prev_action, next_action, clear_action, get_last_saved_item
 from filter_dropdowns import handle_item_type_selection, handle_item_purpose_selection, handle_item_sub_type_selection, handle_item_description_selection
 
 
@@ -89,7 +89,25 @@ def show_item_info(root, df1, df2, current_row_index, s_no_value=None):
                 match_count_label = tk.Label(
                     left_frame, text=f"Matches found in df2: {match_count}", font=("Arial", 12))
                 match_count_label.grid(
-                    row=5, column=0, columnspan=2, padx=10, pady=20)
+                    row=5, column=0, padx=10, pady=20, sticky='w')
+
+                s_no, total_items = get_last_saved_item()
+
+                if s_no is not None:
+                    last_saved_label = tk.Label(
+                        left_frame, text=f"Last Saved S.No: {s_no}", font=("Arial", 12))
+                    total_items_label = tk.Label(
+                        left_frame, text=f"Total Saved Items: {total_items}", font=("Arial", 12))
+                else:
+                    last_saved_label = tk.Label(
+                        left_frame, text="No items have been saved yet.", font=("Arial", 12))
+                    total_items_label = tk.Label(
+                        left_frame, text="Total Saved Items: 0", font=("Arial", 12))
+
+                last_saved_label.grid(
+                    row=6, column=0, padx=10, pady=20, sticky='w')
+                total_items_label.grid(
+                    row=7, column=0, padx=10, pady=20, sticky='w')
 
                 if not item_matches.empty:
                     new_value_found = "Yes"
@@ -282,6 +300,12 @@ def show_item_info(root, df1, df2, current_row_index, s_no_value=None):
                 *search_action(root, df1, df2, current_row_index, s_no_entry)))
             search_button.grid(row=0, column=0, padx=15)
 
+            def update_last_saved_info():
+                s_no, total_items = get_last_saved_item()
+                # Update your GUI components with the new values
+                last_saved_label.config(text=f"Last Saved S.No: {s_no}")
+                total_items_label.config(text=f"Total Saved Items: {total_items}")
+
             save_button = tk.Button(action_button_frame, text="Save", font=("Arial", 12), width=12, height=2, command=lambda: save_action(
                 s_no_value=s_no_entry.get(),
                 item_type_combobox=item_type_combobox,
@@ -292,7 +316,8 @@ def show_item_info(root, df1, df2, current_row_index, s_no_value=None):
                 old_item_id_value=item_id_value,
                 new_item_key=item_key_entry,
                 new_item_specifications=item_specifications_combobox,
-                match_found=match_found_var.get()
+                match_found=match_found_var.get(),
+                update_last_saved_info=update_last_saved_info
             ))
             save_button.grid(row=0, column=1, padx=15)
 

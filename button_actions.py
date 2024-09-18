@@ -34,7 +34,7 @@ def prev_action(root, df1, df2, current_row_index):
         return root, df1, df2, current_row_index
 
 
-def save_action(s_no_value, item_type_combobox, item_name_entry, new_value_found, sub_type_combobox, item_description_combobox, old_item_id_value, new_item_key, new_item_specifications, match_found):
+def save_action(s_no_value, item_type_combobox, item_name_entry, new_value_found, sub_type_combobox, item_description_combobox, old_item_id_value, new_item_key, new_item_specifications, match_found, update_last_saved_info):
     # Retrieve current values from the comboboxes and entry fields
     current_item_type = item_type_combobox.get()  # Get selected item type
     current_item_name = item_name_entry.get()  # Get entered item name
@@ -79,8 +79,26 @@ def save_action(s_no_value, item_type_combobox, item_name_entry, new_value_found
                 df.to_excel(writer, sheet_name='Sheet1', index=False)
 
         print("Data saved:", data)
+
+        # Update last saved info
+        update_last_saved_info()
     else:
         print("Save operation canceled")
+
+
+def get_last_saved_item(file_path='saved_data.xlsx'):
+    if os.path.isfile(file_path):
+        # Read the saved_data.xlsx file
+        df = pd.read_excel(file_path, sheet_name='Sheet1', engine='openpyxl')
+
+        if not df.empty:
+            # Get the last saved item
+            last_item = df.iloc[-1]
+            s_no = last_item['S.No']
+            total_items = len(df)
+            return s_no, total_items
+
+    return None, 0
 
 
 def next_action(root, df1, df2, current_row_index):
